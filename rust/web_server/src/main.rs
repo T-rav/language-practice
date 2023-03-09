@@ -1,6 +1,4 @@
 use web::Server;
-use http::Method;
-use http::Request;
 
 mod http;
 mod web;
