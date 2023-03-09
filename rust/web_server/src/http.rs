@@ -25,20 +25,40 @@ impl TryFrom<&[u8]> for Request{
         let request = str::from_utf8(value)?;
         let mut tokens = split_unquoted_char(request, ' ');
         
-        let method = tokens.next().ok_or(ParseError::InvalidRequest)?;
-        let mut path = tokens.next().ok_or(ParseError::InvalidRequest)?;
-        let protocol = tokens.next().ok_or(ParseError::InvalidRequest)?;
+        let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (mut path,request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
 
-        if protocol != "HTTP/1.1" {
+        if protocol.trim() != "HTTP/1.1" {
+            print!("[{}]",protocol);
             return Err(ParseError::InvalidProtocol);
         }
 
         let method : Method = method.parse()?;
+        let mut query_string = None;
 
-        // todo : I now need to ensure there are three tokens and return an error if not
+        if let Some(idx) = path.find('?'){
+            query_string = Some(path[idx+1..].to_string());
+            path = &path[..idx];
+        }
 
-        unimplemented!()
+        Ok(Self{
+            path : path.to_string(), 
+            query_string,
+            method
+            
+        })
     }
+}
+
+fn get_next_word(request: &str) -> Option<(&str, &str)> {
+    for (i, c) in request.chars().enumerate() {
+        if c == ' ' || c == '\r' {
+            return Some((&request[..i], &request[i + 1..]));
+        }
+    }
+
+    None
 }
 
 impl From<Utf8Error> for ParseError{

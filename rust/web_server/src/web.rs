@@ -29,12 +29,12 @@ impl Server {
                     match stream.read(&mut buffer){
                         Ok(size) => {
                             // todo: read until end of all data
-                            println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+                            //println!("Received a request: {}", String::from_utf8_lossy(&buffer));
                             
                             let parsedRequest = Request::try_from(&buffer[..]);
                             match parsedRequest{
                                 Ok(request) => {
-                                    todo!()
+                                    unimplemented!()
                                 },
                                 Err(e) => {
                                     println!("Failed to parse request: {}", e);
