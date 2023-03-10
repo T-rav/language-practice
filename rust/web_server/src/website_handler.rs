@@ -4,12 +4,13 @@ use crate::{server::Handler, http::Request, response::{Response, StatusCode}};
 
 
 pub struct WebsiteHandler{
-    www_root: String
+    www_root: String,
+    base_doc: String
 }
 
 impl WebsiteHandler{
-    pub fn new(www_root:String) -> Self{
-        Self{www_root}
+    pub fn new(www_root:String, base_doc:String) -> Self{
+        Self{www_root, base_doc}
     }
 
     fn read_file(&self, file_path: &str) -> Option<String> {
@@ -32,7 +33,7 @@ impl Handler for WebsiteHandler{
     fn handle_request(&mut self, request: &Request) -> Response{
         match request.method(){
             crate::http::Method::GET => match request.path(){
-                "/" => Response::new(StatusCode::Ok, self.read_file("index.html")), // todo: make this configurable
+                "/" => Response::new(StatusCode::Ok, self.read_file(&self.base_doc)), // todo: make this configurable
                 path => match self.read_file(path) {
                     Some(contents) => Response::new(StatusCode::Ok, Some(contents)),
                     None => Response::new(StatusCode::NotFound, None),
