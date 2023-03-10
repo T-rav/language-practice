@@ -2,6 +2,7 @@ use web::Server;
 
 mod http;
 mod web;
+mod query_string;
 
 fn main() {
 

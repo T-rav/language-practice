@@ -1,7 +1,7 @@
 use std::{net::TcpListener, io::Read};
 use crate::http::Request;
 use std::convert::TryFrom;
-use std::str::from_utf8;
+
 
 pub struct Server{
     addr: String,

@@ -4,24 +4,27 @@ use std::error::Error;
 use std::str;
 use std::str::FromStr;
 use splitty::*;
-use std::fmt::{Result as FmtResult, Formatter, Display, Debug};
+use std::fmt::{Result as FmtResult, Display, Debug};
 
-pub struct Request{
+use crate::query_string::QueryString;
+
+pub struct Request<'buf>{
     path: String,
-    query_string: Option<String>,
+    query_string: Option<QueryString<'buf>>,
     method: Method,
 }
 
-impl Request {
+impl<'buf> Request<'buf> {
+    /* 
     fn from_byte_array(bug: &[u8]) -> Result<Self, String> {
         unimplemented!()
-    }
+    }*/
 }
 
-impl TryFrom<&[u8]> for Request{
+impl<'buf> TryFrom<&'buf [u8]> for Request<'buf>{
     type Error = ParseError;
 
-    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+    fn try_from(value: &'buf [u8]) -> Result<Self, Self::Error> {
         let request = str::from_utf8(value)?;
         let mut tokens = split_unquoted_char(request, ' ');
         
@@ -38,7 +41,7 @@ impl TryFrom<&[u8]> for Request{
         let mut query_string = None;
 
         if let Some(idx) = path.find('?'){
-            query_string = Some(path[idx+1..].to_string());
+            query_string = Some(QueryString::from(&path[idx+1..]));
             path = &path[..idx];
         }
 
