@@ -37,7 +37,8 @@ impl Response{
         Response{status_code, body}
     }
 
-    pub fn send(&self, stream: &mut TcpStream) -> IoResult<()>{
+    // TcpStream to impl Write to make this more test friendly
+    pub fn send(&self, stream: &mut impl Write) -> IoResult<()>{
         let body = match &self.body{
             Some(_body) => _body,
             None => "",
