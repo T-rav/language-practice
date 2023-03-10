@@ -7,7 +7,7 @@ use splitty::*;
 use std::fmt::{Result as FmtResult, Display, Debug};
 
 use crate::query_string::QueryString;
-
+#[derive(Debug)]
 pub struct Request<'buf>{
     path: String,
     query_string: Option<QueryString<'buf>>,
@@ -104,6 +104,7 @@ impl Error for ParseError{
 
 }
 
+#[derive(Debug)]
 pub enum Method{
     GET,
     HEAD,

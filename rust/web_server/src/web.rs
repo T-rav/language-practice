@@ -33,8 +33,8 @@ impl Server {
                             
                             let parsedRequest = Request::try_from(&buffer[..]);
                             match parsedRequest{
-                                Ok(request) => {
-                                    unimplemented!()
+                                Ok(_request) => {
+                                    dbg!(_request);
                                 },
                                 Err(e) => {
                                     println!("Failed to parse request: {}", e);
