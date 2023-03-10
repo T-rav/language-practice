@@ -1,5 +1,5 @@
-use std::{net::TcpListener, io::Read};
-use crate::http::Request;
+use std::{net::TcpListener, io::Read, io::Write};
+use crate::{http::Request, response::{StatusCode, Response}};
 use std::convert::TryFrom;
 
 
@@ -29,16 +29,19 @@ impl Server {
                     match stream.read(&mut buffer){
                         Ok(size) => {
                             // todo: read until end of all data
-                            //println!("Received a request: {}", String::from_utf8_lossy(&buffer));
-                            
-                            let parsedRequest = Request::try_from(&buffer[..]);
-                            match parsedRequest{
+                            let response = match Request::try_from(&buffer[..]){
                                 Ok(_request) => {
                                     dbg!(_request);
+                                     Response::new(StatusCode::Ok, Some("<h1>It Works!!!</h1>".to_string()))
                                 },
                                 Err(e) => {
                                     println!("Failed to parse request: {}", e);
+                                    Response::new(StatusCode::BadRequest,None)
                                 },
+                            };
+
+                            if let Err(e) = response.send(&mut stream){
+                                println!("Failed to send response: {}", e);
                             }
                         },
                         Err(e) => {
