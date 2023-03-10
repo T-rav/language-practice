@@ -24,8 +24,6 @@ impl Server {
     }
 
     pub fn run(self, mut handler: impl Handler){
-        println!("Running on : [{}] !", self.addr);
-
         let listener = TcpListener::bind(&self.addr).unwrap();
 
         loop{
