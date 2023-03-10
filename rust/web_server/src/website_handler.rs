@@ -20,7 +20,6 @@ impl WebsiteHandler{
                 if path.starts_with(&self.www_root) {
                     fs::read_to_string(path).ok()
                 } else {
-                    println!("Directory Traversal Attack Attempted: {}", file_path);
                     None
                 }
             }
@@ -31,11 +30,13 @@ impl WebsiteHandler{
 
 impl Handler for WebsiteHandler{
     fn handle_request(&mut self, request: &Request) -> Response{
-        //Response::new(StatusCode::Ok, Some("<h1>test!</h1>".to_string()))
         match request.method(){
             crate::http::Method::GET => match request.path(){
-                "/" => Response::new(StatusCode::Ok, self.read_file("index.html")),
-                _ => Response::new(StatusCode::NotFound, None)
+                "/" => Response::new(StatusCode::Ok, self.read_file("index.html")), // todo: make this configurable
+                path => match self.read_file(path) {
+                    Some(contents) => Response::new(StatusCode::Ok, Some(contents)),
+                    None => Response::new(StatusCode::NotFound, None),
+                },
             },
 
             _ => Response::new(StatusCode::NotFound, None)
